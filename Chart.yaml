@@ -1,0 +1,22 @@
+apiVersion: v1
+name: peertube
+version: v1.0.0
+kubeVersion: ">= 1.31.0"
+description: This is not an official PeerTube chart.
+type: application
+keywords:
+  - nginx
+  - certmanager
+  - peertube
+  - postgresql
+  - redis
+  - postfix
+home: https://github.com/bro2020/peertube-helm
+maintainers:
+  - name: bro2020
+    email: arm121@i.ua
+    url: https://git.1sb.pp.ua/asadovyi
+icon: https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Logo_de_PeerTube.svg/1200px-Logo_de_PeerTube.svg.png
+appVersion: "v1.0.0"
+annotations:
+  name: peertube
