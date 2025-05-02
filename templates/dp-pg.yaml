@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "peertube.node.fullname" . }}
+  name: {{ include "peertube.pg.fullname" . }}
   namespace: {{ include "peertube.namespace" . }}
   labels:
-    {{- include "peertube.node.labels" . | nindent 4 }}
+    {{- include "peertube.pg.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.node.replicaCount }}
+  replicas: {{ .Values.pg.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "peertube.node.selectorLabels" . | nindent 6 }}
+      {{- include "peertube.pg.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -19,30 +19,30 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "peertube.node.labels" . | nindent 8 }}
+        {{- include "peertube.pg.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
-      {{- with .Values.node.imagePullSecrets }}
+      {{- with .Values.pg.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "peertube.serviceAccountName" . }}
-      {{- with .Values.node.securityContext }}
+      {{- with .Values.pg.securityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
       - name: proxy
-        {{- with .Values.node.PodSecurityContext }}
+        {{- with .Values.pg.PodSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        image: "{{ .Values.node.image.name }}:{{ .Values.node.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.node.image.pullPolicy }}
+        image: "{{ .Values.pg.image.name }}:{{ .Values.pg.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.pg.image.pullPolicy }}
         ports:
-        {{- range .Values.node.service.ports }}
+        {{- range .Values.pg.service.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
         - name: {{ default "unknown" .name }}
           containerPort: {{ .targetPort }}
@@ -52,53 +52,44 @@ spec:
         {{- end }}
           protocol: {{ .protocol | default "TCP" }}
         {{- end }}
-        {{- with .Values.node.livenessProbe }}
+        {{- with .Values.pg.livenessProbe }}
         livenessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.node.readinessProbe }}
+        {{- with .Values.pg.readinessProbe }}
         readinessProbe:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.node.resources }}
+        {{- with .Values.pg.resources }}
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.node.volumeMounts }}
+        {{- with .Values.pg.volumeMounts }}
         volumeMounts:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-      {{- with .Values.node.volumes }}
+      {{- with .Values.pg.volumes }}
       volumes:
-      - name: assets
-        {{- if .Values.storage.assets.hostPath }}
-        hostPath:
-          path: "{{ .Values.storage.assets.hostPath }}"
-          type: Directory
-        {{- else }}
-        persistentVolumeClaim:
-          claimName: {{ include "peertube.fullname" . }}-assets
-        {{- end }}
       - name: data
-        {{- if .Values.node.storage.hostPath }}
+        {{- if .Values.pg.storage.hostPath }}
         hostPath:
-          path: "{{ .Values.node.storage.hostPath }}"
+          path: "{{ .Values.pg.storage.hostPath }}"
           type: Directory
         {{- else }}
         persistentVolumeClaim:
-          claimName: {{ include "peertube.node.fullname" . }}-data
+          claimName: {{ include "peertube.pg.fullname" . }}-data
         {{- end }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- with .Values.node.nodeSelector }}
+      {{- with .Values.pg.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- with .Values.node.affinity }}
+      {{- with .Values.pg.affinity }}
       affinity:
         {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- with .Values.node.tolerations }}
+      {{- with .Values.pg.tolerations }}
       tolerations:
         {{- toYaml . | nindent 6 }}
       {{- end }}

@@ -1,0 +1,22 @@
+{{- if .Values.redis.service }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "peertube.redis.fullname" . }}
+  labels:
+    {{- include "peertube.redis.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+  {{- range .Values.redis.service.ports }}
+  - name: {{ default "unknown" .name }}
+    port: {{ .port }}
+    {{- if .nodePort }}
+    nodePort: {{ .nodePort }}
+    {{- end }}
+    targetPort: {{ default .port .targetPort }}
+    protocol: {{ .protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "peertube.redis.selectorLabels" . | nindent 4 }}
+{{- end }}

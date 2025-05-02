@@ -1,0 +1,67 @@
+{{- if not .Values.storage.assets.hostPath }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "peertube.fullname" . }}-assets
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.storage.assets.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.assets.storageSize }}
+  storageClassName: {{ .Values.storage.assets.storageClassName }}
+---
+{{- end }}
+{{- if not .Values.node.storage.hostPath }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "peertube.node.fullname" . }}-data
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.node.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.node.storage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.node.storage.storageSize }}
+  storageClassName: {{ .Values.node.storage.storageClassName }}
+---
+{{- end }}
+{{- if not .Values.pg.storage.hostPath }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "peertube.pg.fullname" . }}-data
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.pg.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.pg.storage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.pg.storage.storageSize }}
+  storageClassName: {{ .Values.pg.storage.storageClassName }}
+---
+{{- end }}
+{{- if not .Values.redis.storage.hostPath }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "peertube.redis.fullname" . }}-data
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.redis.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.redis.storage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.redis.storage.storageSize }}
+  storageClassName: {{ .Values.redis.storage.storageClassName }}
+{{- end }}

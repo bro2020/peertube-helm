@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "peertube.postfix.fullname" . }}
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.postfix.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.postfix.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "peertube.postfix.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "peertube.postfix.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.postfix.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "peertube.serviceAccountName" . }}
+      {{- with .Values.postfix.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: proxy
+        {{- with .Values.postfix.PodSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.postfix.image.name }}:{{ .Values.postfix.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
+        ports:
+        {{- range .Values.postfix.service.ports }}
+        {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
+        - name: {{ default "unknown" .name }}
+          containerPort: {{ .targetPort }}
+        {{- else }}
+        - name: {{ default .name .targetPort }}
+          containerPort: {{ .port }}
+        {{- end }}
+          protocol: {{ .protocol | default "TCP" }}
+        {{- end }}
+        {{- with .Values.postfix.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.postfix.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.postfix.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.postfix.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- with .Values.postfix.volumes }}
+      volumes:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.postfix.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.postfix.affinity }}
+      affinity:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.postfix.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}

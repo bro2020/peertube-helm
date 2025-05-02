@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "peertube.redis.fullname" . }}
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.redis.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.redis.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "peertube.redis.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "peertube.redis.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.redis.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "peertube.serviceAccountName" . }}
+      {{- with .Values.redis.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: proxy
+        {{- with .Values.redis.PodSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.redis.image.name }}:{{ .Values.redis.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+        ports:
+        {{- range .Values.redis.service.ports }}
+        {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
+        - name: {{ default "unknown" .name }}
+          containerPort: {{ .targetPort }}
+        {{- else }}
+        - name: {{ default .name .targetPort }}
+          containerPort: {{ .port }}
+        {{- end }}
+          protocol: {{ .protocol | default "TCP" }}
+        {{- end }}
+        {{- with .Values.redis.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.redis.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.redis.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.redis.volumeMounts }}
+        volumeMounts:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- with .Values.redis.volumes }}
+      volumes:
+        - name: data
+        {{- if .Values.redis.storage.hostPath }}
+        hostPath:
+          path: "{{ .Values.redis.storage.hostPath }}"
+          type: Directory
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ include "peertube.redis.fullname" . }}-data
+        {{- end }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.redis.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.redis.affinity }}
+      affinity:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.redis.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}

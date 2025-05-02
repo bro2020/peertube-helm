@@ -1,14 +1,14 @@
-{{- if .Values.node.service }}
+{{- if .Values.pg.service }}
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "peertube.node.fullname" . }}
+  name: {{ include "peertube.pg.fullname" . }}
   labels:
-    {{- include "peertube.node.labels" . | nindent 4 }}
+    {{- include "peertube.pg.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.node.service.type }}
+  type: {{ .Values.pg.service.type }}
   ports:
-  {{- range .Values.node.service.ports }}
+  {{- range .Values.pg.service.ports }}
   - name: {{ default "unknown" .name }}
     port: {{ .port }}
     {{- if .nodePort }}
@@ -18,5 +18,5 @@ spec:
     protocol: {{ .protocol | default "TCP" }}
   {{- end }}
   selector:
-    {{- include "peertube.node.selectorLabels" . | nindent 4 }}
+    {{- include "peertube.pg.selectorLabels" . | nindent 4 }}
 {{- end }}
