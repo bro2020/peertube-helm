@@ -64,12 +64,34 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.proxy.volumeMounts }}
         volumeMounts:
+        - name: assets
+          mountPath: "/var/www/peertube/peertube-latest/client/dist"
+        - name: data
+          mountPath: "/var/www/peertube/storage"
+        {{- with .Values.proxy.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
-      {{- with .Values.proxy.volumes }}
       volumes:
+      - name: assets
+        {{- if (hasKey .Values.assets "hostPath") }}
+        hostPath:
+          path: "{{ .Values.assets.hostPath.path }}"
+          type: Directory
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ include "peertube.fullname" . }}-assets
+        {{- end }}
+      - name: data
+        {{- if (hasKey .Values.data "hostPath") }}
+        hostPath:
+          path: "{{ .Values.data.hostPath.path }}"
+          type: Directory
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ include "peertube.fullname" . }}-data
+        {{- end }}
+      {{- with .Values.proxy.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- with .Values.proxy.nodeSelector }}

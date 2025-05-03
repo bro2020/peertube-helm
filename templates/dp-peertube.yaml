@@ -64,30 +64,34 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.node.volumeMounts }}
         volumeMounts:
+        - name: assets
+          mountPath: "/app/client/dist"
+        - name: data
+          mountPath: "/data"
+        {{- with .Values.node.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
-      {{- with .Values.node.volumes }}
       volumes:
       - name: assets
-        {{- if .Values.storage.assets.hostPath }}
+        {{- if (hasKey .Values.assets "hostPath") }}
         hostPath:
-          path: "{{ .Values.storage.assets.hostPath }}"
+          path: "{{ .Values.assets.hostPath.path }}"
           type: Directory
         {{- else }}
         persistentVolumeClaim:
           claimName: {{ include "peertube.fullname" . }}-assets
         {{- end }}
       - name: data
-        {{- if .Values.node.storage.hostPath }}
+        {{- if (hasKey .Values.data "hostPath") }}
         hostPath:
-          path: "{{ .Values.node.storage.hostPath }}"
+          path: "{{ .Values.data.hostPath.path }}"
           type: Directory
         {{- else }}
         persistentVolumeClaim:
-          claimName: {{ include "peertube.node.fullname" . }}-data
+          claimName: {{ include "peertube.fullname" . }}-data
         {{- end }}
+      {{- with .Values.node.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- with .Values.node.nodeSelector }}

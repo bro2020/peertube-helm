@@ -59,13 +59,6 @@ proxy:
       path: /
       port: http
   volumes: []
-  storage:
-    # accessModes: ReadWriteMany
-    # storageSize: 1G
-    # storageClassName: lvm-storage
-    hostPath:
-    - path: "/mnt/peertube/data"
-    - path: "/mnt/peertube/assets"
 
 node:
   image:
@@ -109,13 +102,6 @@ node:
     tcpSocket:
       port: 1935
   volumes: []
-  storage:
-    # accessModes: ReadWriteMany
-    # storageSize: 1G
-    # storageClassName: lvm-storage
-    hostPath:
-    - path: "/mnt/peertube/data"
-    - path: "/mnt/peertube/assets"
 
 pg:
   image:
@@ -158,13 +144,16 @@ pg:
   readinessProbe:
     tcpSocket:
       port: 5432
+  # Need set "storage" and "volumes" or "hostPath"
   volumes: []
-  storage:
-    # accessModes: ReadWriteMany
-    # storageSize: 1G
-    # storageClassName: lvm-storage
-    hostPath:
-    - path: "/mnt/peertube/pg"
+  storage: {}
+    # pgData:
+    #   accessModes: ReadWriteMany
+    #   storageSize: 1G
+    #   storageClassName: lvm-storage
+  hostPath:
+    pgData:
+      path: "/mnt/peertube/pg"
 
 redis:
   image:
@@ -207,13 +196,16 @@ redis:
   readinessProbe:
     tcpSocket:
       port: 6379
+  # Need set "storage" and "volumes" or "hostPath"
   volumes: []
-  storage:
-    # accessModes: ReadWriteMany
-    # storageSize: 1G
-    # storageClassName: lvm-storage
-    hostPath:
-    - path: "/mnt/peertube/redis"
+  storage: {}
+    # redisData:
+    #   accessModes: ReadWriteMany
+    #   storageSize: 1G
+    #   storageClassName: lvm-storage
+  hostPath:
+    redisData:
+      path: "/mnt/peertube/redis"
 
 postfix:
   image:
@@ -260,7 +252,16 @@ postfix:
   readinessProbe:
     tcpSocket:
       port: 25
+  # Can be set "storage" and "volumes" or "hostPath"
   volumes: []
+  storage: {}
+    # postfixData:
+    #   accessModes: ReadWriteMany
+    #   storageSize: 1G
+    #   storageClassName: lvm-storage
+  hostPath:
+    # postfixData:
+    #   path: "/mnt/peertube/postfix"
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -299,9 +300,20 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
-# Common assets storage
-storage:
-  assets:
-    accessModes: ReadWriteMany
-    storageSize: 1G
-    storageClassName: manual
+# Common assets and node data storage
+assets:
+  ## Need set "storage" or "hostPath"
+  storage: {}
+    # accessModes: ReadWriteMany
+    # storageSize: 1G
+    # storageClassName: lvm-storage
+  hostPath:
+    path: "/mnt/peertube/assets"
+data:
+  ## Need set "storage" or "hostPath"
+  storage: {}
+    # accessModes: ReadWriteMany
+    # storageSize: 1G
+    # storageClassName: lvm-storage
+  hostPath:
+    path: "/mnt/peertube/data"

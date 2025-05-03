@@ -64,21 +64,23 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.redis.volumeMounts }}
         volumeMounts:
+        - name: redis-data
+          mountPath: "/data"
+        {{- with .Values.redis.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
-      {{- with .Values.redis.volumes }}
       volumes:
-        - name: data
-        {{- if .Values.redis.storage.hostPath }}
+      - name: redis-data
+        {{- if (hasKey .Values.redis.hostPath "redisData") }}
         hostPath:
-          path: "{{ .Values.redis.storage.hostPath }}"
+          path: "{{ .Values.redis.hostPath.redisData.path }}"
           type: Directory
         {{- else }}
         persistentVolumeClaim:
           claimName: {{ include "peertube.redis.fullname" . }}-data
         {{- end }}
+      {{- with .Values.redis.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- with .Values.redis.nodeSelector }}

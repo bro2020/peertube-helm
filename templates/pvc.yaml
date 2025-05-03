@@ -1,4 +1,4 @@
-{{- if not .Values.storage.assets.hostPath }}
+{{- if (hasKey .Values.assets "storage") }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -8,31 +8,31 @@ metadata:
     {{- include "peertube.labels" . | nindent 4 }}
 spec:
   accessModes:
-  - {{ .Values.storage.assets.accessModes }}
+  - {{ .Values.assets.storage.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.storage.assets.storageSize }}
-  storageClassName: {{ .Values.storage.assets.storageClassName }}
+      storage: {{ .Values.assets.storage.storageSize }}
+  storageClassName: {{ .Values.assets.storage.storageClassName }}
 ---
 {{- end }}
-{{- if not .Values.node.storage.hostPath }}
+{{- if (hasKey .Values.data "storage") }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "peertube.node.fullname" . }}-data
+  name: {{ include "peertube.fullname" . }}-data
   namespace: {{ include "peertube.namespace" . }}
   labels:
-    {{- include "peertube.node.labels" . | nindent 4 }}
+    {{- include "peertube.labels" . | nindent 4 }}
 spec:
   accessModes:
-  - {{ .Values.node.storage.accessModes }}
+  - {{ .Values.data.storage.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.node.storage.storageSize }}
-  storageClassName: {{ .Values.node.storage.storageClassName }}
+      storage: {{ .Values.data.storage.storageSize }}
+  storageClassName: {{ .Values.data.storage.storageClassName }}
 ---
 {{- end }}
-{{- if not .Values.pg.storage.hostPath }}
+{{- if (hasKey .Values.pg.storage "pgData") }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -42,14 +42,14 @@ metadata:
     {{- include "peertube.pg.labels" . | nindent 4 }}
 spec:
   accessModes:
-  - {{ .Values.pg.storage.accessModes }}
+  - {{ .Values.pg.storage.pgData.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.pg.storage.storageSize }}
-  storageClassName: {{ .Values.pg.storage.storageClassName }}
+      storage: {{ .Values.pg.storage.pgData.storageSize }}
+  storageClassName: {{ .Values.pg.storage.pgData.storageClassName }}
 ---
 {{- end }}
-{{- if not .Values.redis.storage.hostPath }}
+{{- if (hasKey .Values.redis.storage "redisData") }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -59,9 +59,10 @@ metadata:
     {{- include "peertube.redis.labels" . | nindent 4 }}
 spec:
   accessModes:
-  - {{ .Values.redis.storage.accessModes }}
+  - {{ .Values.redis.storage.redisData.accessModes }}
   resources:
     requests:
-      storage: {{ .Values.redis.storage.storageSize }}
-  storageClassName: {{ .Values.redis.storage.storageClassName }}
+      storage: {{ .Values.redis.storage.redisData.storageSize }}
+  storageClassName: {{ .Values.redis.storage.redisData.storageClassName }}
+---
 {{- end }}

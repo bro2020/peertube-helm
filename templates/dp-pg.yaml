@@ -64,21 +64,23 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.pg.volumeMounts }}
         volumeMounts:
+        - name: pg-data
+          mountPath: "/var/lib/postgresql/data"
+        {{- with .Values.pg.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
-      {{- with .Values.pg.volumes }}
       volumes:
-      - name: data
-        {{- if .Values.pg.storage.hostPath }}
+      - name: pg-data
+        {{- if (hasKey .Values.pg.hostPath "pgData") }}
         hostPath:
-          path: "{{ .Values.pg.storage.hostPath }}"
+          path: "{{ .Values.pg.hostPath.pgData.path }}"
           type: Directory
         {{- else }}
         persistentVolumeClaim:
           claimName: {{ include "peertube.pg.fullname" . }}-data
         {{- end }}
+      {{- with .Values.pg.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- with .Values.pg.nodeSelector }}
