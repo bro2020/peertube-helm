@@ -1,0 +1,6 @@
+*.swp
+.env
+.history
+.vscode
+.idea
+values/**/secrets

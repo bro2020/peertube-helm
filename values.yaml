@@ -13,7 +13,7 @@ proxy:
   image:
     name: chocobozzz/peertube-webserver
     tag: "latest"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
   tolerations: []
@@ -64,7 +64,7 @@ node:
   image:
     name: chocobozzz/peertube
     tag: "production-bookworm"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
   tolerations: []
@@ -107,7 +107,7 @@ pg:
   image:
     name: postgres
     tag: "16-bookworm"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
   tolerations: []
@@ -159,7 +159,7 @@ redis:
   image:
     name: redis
     tag: "7-bookworm"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
   tolerations: []
@@ -211,7 +211,7 @@ postfix:
   image:
     name: mwader/postfix-relay
     tag: "latest"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
   tolerations: []
