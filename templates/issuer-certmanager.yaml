@@ -1,0 +1,30 @@
+{{- if .Values.certManager.enable }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "peertube.fullname" . }}-cloudflare-api-token
+  namespace: {{ .Values.certManager.namespace }}
+type: Opaque
+data:
+  api-token: {{ .Values.secrets.cert.cloudflareApiToken | b64enc }}
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ include "peertube.fullname" . }}-letsencrypt
+  namespace: {{ .Values.certManager.namespace }}
+spec:
+  acme:
+    email: {{ .Values.secrets.cert.email }}
+    server: https://acme-v02.api.letsencrypt.org/directory
+    disableAccountKeyGeneration: false
+    privateKeySecretRef:
+      name: {{ include "peertube.fullname" . }}-letsencrypt
+    solvers:
+    - dns01:
+        cloudflare:
+          email: {{ .Values.secrets.cert.email }}
+          apiTokenSecretRef:
+            name: {{ include "peertube.fullname" . }}-cloudflare-api-token
+            key: api-token
+{{- end }}

@@ -4,6 +4,7 @@
 
 namespace: peertube
 defaultName: ua
+env: dev # "dev" or "prod"
 
 # This is to override the chart name.
 nameOverride: ""
@@ -300,6 +301,11 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# cert-manager params
+certManager:
+  enable: false
+  namespace: cert-manager
+
 # Common assets and node data storage
 assets:
   ## Need set "storage" or "hostPath"
@@ -317,3 +323,19 @@ data:
     # storageClassName: lvm-storage
   hostPath:
     path: "/mnt/peertube/data"
+
+# This need replace in secret value file
+secrets:
+  common:
+    domain: "peertube.example.com"
+  cert:
+    email: "mail.cf-example.com"
+    cloudflareApiToken: ""
+  proxy:
+  peertube:
+  pg:
+    dbName: peertube
+    dbUser: peertube
+    dbPass: peertube
+  redis:
+  postfix:

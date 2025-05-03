@@ -1,0 +1,26 @@
+{{- $ns := (include "peertube.namespace" .) }}
+# Generate configmap nginx config
+{{- $nodeSvc := printf "%s.%s.svc" (include "peertube.node.fullname" .) $ns }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "peertube.proxy.fullname" . }}-config
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.proxy.labels" . | nindent 4 }}
+data:
+{{- $path := printf "configs/%s/nginx/peertube.conf" .Values.env }}
+{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" $nodeSvc | indent 2 }}
+---
+# Generate configmap peertube custom env config
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "peertube.node.fullname" . }}-custom-env-config
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.node.labels" . | nindent 4 }}
+data:
+{{- $path := printf "configs/%s/peertube/custom-environment-variables.yaml" .Values.env }}
+{{ ($.Files.Glob $path).AsConfig | indent 2 }}
+---

@@ -1,0 +1,16 @@
+{{- if .Values.certManager.enable }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "peertube.fullname" . }}-cert
+  namespace: {{ include "peertube.namespace" . }}
+spec:
+  secretName: {{ include "peertube.fullname" . }}-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: {{ include "peertube.fullname" . }}-letsencrypt
+  commonName: "{{ .Values.secrets.common.domain }}"
+  dnsNames:
+  - "{{ .Values.secrets.common.domain }}"
+  - "*.{{ .Values.secrets.common.domain }}"
+{{- end }}

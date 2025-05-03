@@ -65,6 +65,12 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
         volumeMounts:
+        - name: config
+          mountPath: "/config/config.yaml"
+          subPath: "config.yaml"
+        - name: custom-env-config
+          mountPath: "/config/custom-environment-variables.yaml"
+          subPath: "custom-environment-variables.yaml"
         - name: assets
           mountPath: "/app/client/dist"
         - name: data
@@ -73,6 +79,12 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
       volumes:
+      - name: config
+        secret:
+          secretName: {{ include "peertube.node.fullname" . }}-config
+      - name: custom-env-config
+        configMap:
+          name: {{ include "peertube.node.fullname" . }}-custom-env-config
       - name: assets
         {{- if (hasKey .Values.assets "hostPath") }}
         hostPath:

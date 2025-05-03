@@ -1,4 +1,4 @@
-{{- if (hasKey .Values.assets "storage") }}
+{{- if .Values.assets.storage }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -15,7 +15,7 @@ spec:
   storageClassName: {{ .Values.assets.storage.storageClassName }}
 ---
 {{- end }}
-{{- if (hasKey .Values.data "storage") }}
+{{- if .Values.data.storage }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
