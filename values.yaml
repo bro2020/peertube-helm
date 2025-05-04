@@ -230,7 +230,7 @@ postfix:
     # runAsNonRoot: true
     # runAsUser: 1000
   service:
-    type: ClusterIP
+    type: NodePort
     ports:
     - name: smtp
       port: 25
