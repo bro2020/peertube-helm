@@ -56,11 +56,9 @@ proxy:
   livenessProbe:
     tcpSocket:
       port: 80
-  readinessProbe: {}
-    # httpGet:
-    #   path: /
-    #   port: http
-    #   scheme: HTTPS
+  readinessProbe:
+    tcpSocket:
+      port: 443
   volumes: []
 
 node:

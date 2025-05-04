@@ -50,7 +50,8 @@ spec:
         - -c
         - |
           cp -Hvrfp /srv/config/* /config/
-          exec /usr/local/bin/node dist/server
+          cp -arf /app/client/dist/* /srv/app/client/dist/
+          exec /usr/local/bin/entrypoint.sh /usr/local/bin/node dist/server
         ports:
         {{- range .Values.node.service.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
@@ -187,7 +188,7 @@ spec:
           mountPath: "/srv/config/custom-environment-variables.yaml"
           subPath: "custom-environment-variables.yaml"
         - name: assets
-          mountPath: "/app/client/dist"
+          mountPath: "/srv/app/client/dist"
         - name: data
           mountPath: "/data"
         {{- with .Values.node.volumeMounts }}

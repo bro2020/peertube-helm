@@ -10,7 +10,7 @@ metadata:
     {{- include "peertube.proxy.labels" . | nindent 4 }}
 data:
 {{- $path := printf "configs/%s/nginx/peertube.conf" .Values.env }}
-{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:%d" $nodeSvc (.Values.secrets.peertube.webserverPort | int)) | indent 2 }}
+{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | indent 2 }}
 ---
 # Generate configmap peertube custom env config
 apiVersion: v1
