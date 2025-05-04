@@ -177,8 +177,8 @@ spec:
               key: peertube-admin-email
         volumeMounts:
         - name: config
-          mountPath: "/srv/config/config.yaml"
-          subPath: "config.yaml"
+          mountPath: "/srv/config/production.yaml"
+          subPath: "production.yaml"
         - name: custom-env-config
           mountPath: "/srv/config/custom-environment-variables.yaml"
           subPath: "custom-environment-variables.yaml"
