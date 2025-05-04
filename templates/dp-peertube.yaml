@@ -97,6 +97,11 @@ spec:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
               key: peertube-webserver-port
+        - name: PEERTUBE_WEBSERVER_HTTPS
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.node.fullname" . }}-env
+              key: peertube-webserver-https
         - name: PEERTUBE_DB_NAME
           valueFrom:
             secretKeyRef:
@@ -122,11 +127,6 @@ spec:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
               key: peertube-db-ssl
-        - name: PEERTUBE_WEBSERVER_HTTPS
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-webserver-https
         - name: PEERTUBE_LOG_LEVEL
           valueFrom:
             secretKeyRef:
