@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.certManager.namespace }}
 type: Opaque
 data:
-  api-token: {{ .Values.secrets.cert.cloudflareApiToken | b64enc }}
+  api-token: {{ .Values.secrets.cert.cloudflareApiToken | toString | b64enc }}
 ---
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
