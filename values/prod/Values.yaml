@@ -236,10 +236,12 @@ postfix:
       port: 25
       targetPort: smtp
       protocol: TCP
+      nodePort: 10025
     - name: smtps
       port: 465
       targetPort: smtps
       protocol: TCP
+      nodePort: 10465
   resources: {}
   # limits:
   #   cpu: 100m
