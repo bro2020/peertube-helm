@@ -13,8 +13,8 @@ fullnameOverride: ""
 
 proxy:
   image:
-    name: chocobozzz/peertube-webserver
-    tag: "latest"
+    name: "nginx"
+    tag: "stable-alpine"
     pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
@@ -65,7 +65,7 @@ proxy:
 
 node:
   image:
-    name: chocobozzz/peertube
+    name: "chocobozzz/peertube"
     tag: "production-bookworm"
     pullPolicy: Always
   replicaCount: 1
@@ -112,7 +112,7 @@ node:
 
 pg:
   image:
-    name: postgres
+    name: "postgres"
     tag: "17-bookworm"
     pullPolicy: Always
   replicaCount: 1
@@ -164,7 +164,7 @@ pg:
 
 redis:
   image:
-    name: redis
+    name: "redis"
     tag: "7-bookworm"
     pullPolicy: Always
   replicaCount: 1
@@ -216,7 +216,7 @@ redis:
 
 postfix:
   image:
-    name: mwader/postfix-relay
+    name: "mwader/postfix-relay"
     tag: "latest"
     pullPolicy: Always
   replicaCount: 1
