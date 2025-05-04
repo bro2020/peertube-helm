@@ -41,6 +41,12 @@ spec:
         {{- end }}
         image: "{{ .Values.node.image.name }}:{{ .Values.node.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.node.image.pullPolicy }}
+        command:
+        - /bin/bash
+        - -c
+        - |
+          cp -Hvrfp /srv/config/* /config/
+          exec /usr/local/bin/node dist/server
         ports:
         {{- range .Values.node.service.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
@@ -171,10 +177,10 @@ spec:
               key: peertube-admin-email
         volumeMounts:
         - name: config
-          mountPath: "/config/config.yaml"
+          mountPath: "/srv/config/config.yaml"
           subPath: "config.yaml"
         - name: custom-env-config
-          mountPath: "/config/custom-environment-variables.yaml"
+          mountPath: "/srv/config/custom-environment-variables.yaml"
           subPath: "custom-environment-variables.yaml"
         - name: assets
           mountPath: "/app/client/dist"
