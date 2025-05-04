@@ -41,6 +41,12 @@ spec:
         {{- end }}
         image: "{{ .Values.proxy.image.name }}:{{ .Values.proxy.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.proxy.image.pullPolicy }}
+        command:
+        - /bin/sh
+        - -c
+        - |
+          cp -Hvfp "/srv/nginx/conf.d/peertube.conf" "/etc/nginx/conf.d/peertube.conf"
+          exec /usr/sbin/nginx -g 'daemon off; master_process on;'
         ports:
         {{- range .Values.proxy.service.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
@@ -69,7 +75,7 @@ spec:
           value: {{ .Values.tz }}
         volumeMounts:
         - name: config
-          mountPath: "/etc/nginx/conf.d/peertube.conf"
+          mountPath: "/srv/nginx/conf.d/peertube.conf"
           # subPath: "peertube.conf"
         {{- if .Values.certManager.enable }}
         - name: tls
