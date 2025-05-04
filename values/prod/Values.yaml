@@ -262,8 +262,8 @@ postfix:
     #   storageSize: 1G
     #   storageClassName: lvm-storage
   hostPath:
-    # postfixData:
-    #   path: "/mnt/peertube/postfix"
+    postfixData:
+      path: "/mnt/peertube/postfix"
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:

@@ -64,25 +64,41 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .Values.postfix.volumeMounts }}
         env:
         - name: TZ
           value: {{ .Values.tz }}
         - name: POSTFIX_myhostname
           valueFrom:
             secretKeyRef:
-              name: {{ include "peertube.peertube.fullname" . }}-env
-              key: peertube-webserver-hostname
+              name: {{ include "peertube.postfix.fullname" . }}-env
+              key: postfix-myhostname
         - name: OPENDKIM_DOMAINS
           valueFrom:
             secretKeyRef:
-              name: {{ include "peertube.peertube.fullname" . }}-env
-              key: peertube-webserver-hostname
+              name: {{ include "peertube.postfix.fullname" . }}-env
+              key: opendkim-domains
+        - name: OPENDKIM_RequireSafeKeys
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.postfix.fullname" . }}-env
+              key: opendkim-requiresafekeys
         volumeMounts:
+        - name: postfix-data
+          mountPath: "/etc/opendkim/keys"
+        {{- with .Values.postfix.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
-      {{- with .Values.postfix.volumes }}
       volumes:
+      - name: postfix-data
+        {{- if (hasKey .Values.postfix.hostPath "postfixData") }}
+        hostPath:
+          path: "{{ .Values.postfix.hostPath.postfixData.path }}"
+          type: Directory
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ include "peertube.postfix.fullname" . }}-data
+        {{- end }}
+      {{- with .Values.postfix.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
       {{- with .Values.postfix.nodeSelector }}

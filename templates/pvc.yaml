@@ -66,3 +66,20 @@ spec:
   storageClassName: {{ .Values.redis.storage.redisData.storageClassName }}
 ---
 {{- end }}
+{{- if (hasKey .Values.postfix.storage "postfixData") }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "peertube.postfix.fullname" . }}-data
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.postfix.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.redis.storage.postfixData.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.redis.storage.postfixData.storageSize }}
+  storageClassName: {{ .Values.redis.storage.postfixData.storageClassName }}
+---
+{{- end }}
