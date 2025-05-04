@@ -24,6 +24,10 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "{{ .Values.secrets.common.domain }}"
       {{- with .Values.node.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -88,6 +92,11 @@ spec:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
               key: peertube-webserver-hostname
+        - name: PEERTUBE_WEBSERVER_PORT
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.node.fullname" . }}-env
+              key: peertube-webserver-port
         - name: PEERTUBE_DB_NAME
           valueFrom:
             secretKeyRef:
@@ -113,11 +122,6 @@ spec:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
               key: peertube-db-ssl
-        - name: PEERTUBE_WEBSERVER_PORT
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-webserver-port
         - name: PEERTUBE_WEBSERVER_HTTPS
           valueFrom:
             secretKeyRef:
@@ -149,7 +153,7 @@ spec:
               name: {{ include "peertube.node.fullname" . }}-env
               key: peertube-smtp-password
         - name: PEERTUBE_SMTP_HOSTNAME
-          value: {{ include "peertube.postfix.fullname" . }}
+          value: {{ include "peertube.postfix.fullname" . }}.{{ include "peertube.namespace" . }}.svc
         - name: PEERTUBE_SMTP_PORT
           valueFrom:
             secretKeyRef:

@@ -39,12 +39,12 @@ proxy:
       port: 80
       targetPort: http
       protocol: TCP
-      nodePort: 10080
+      nodePort: 3080
     - name: https
       port: 443
       targetPort: https
       protocol: TCP
-      nodePort: 10443
+      nodePort: 3443
   resources: {}
   # limits:
   #   cpu: 100m
@@ -56,10 +56,11 @@ proxy:
   livenessProbe:
     tcpSocket:
       port: 80
-  readinessProbe:
-    httpGet:
-      path: /
-      port: http
+  readinessProbe: {}
+    # httpGet:
+    #   path: /
+    #   port: https
+    #   scheme: HTTPS
   volumes: []
 
 node:
@@ -86,8 +87,12 @@ node:
     type: ClusterIP
     ports:
     - name: peertube
-      port: 1935
+      port: 9000
       targetPort: peertube
+      protocol: TCP
+    - name: rtmp
+      port: 1935
+      targetPort: rtmp
       protocol: TCP
   resources: {}
   # limits:
@@ -99,16 +104,16 @@ node:
   volumeMounts: []
   livenessProbe:
     tcpSocket:
-      port: 1935
+      port: 9000
   readinessProbe:
     tcpSocket:
-      port: 1935
+      port: 9000
   volumes: []
 
 pg:
   image:
     name: postgres
-    tag: "16-bookworm"
+    tag: "17-bookworm"
     pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}
@@ -236,12 +241,12 @@ postfix:
       port: 25
       targetPort: smtp
       protocol: TCP
-      nodePort: 10025
+      nodePort: 3025
     - name: smtps
       port: 465
       targetPort: smtps
       protocol: TCP
-      nodePort: 10465
+      nodePort: 3465
   resources: {}
   # limits:
   #   cpu: 100m
