@@ -64,6 +64,12 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        env:
+        - name: PEERTUBE_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.node.fullname" . }}-env
+              key: peertube-secret
         volumeMounts:
         - name: config
           mountPath: "/config/config.yaml"

@@ -333,6 +333,7 @@ secrets:
     cloudflareApiToken: ""
   proxy:
   peertube:
+    secret: 00eac1ad66135e005d884bc7ec93459461df00726f48cb37a1c0b6417979e41e
   pg:
     dbName: peertube
     dbUser: peertube
