@@ -64,6 +64,9 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        env:
+        - name: TZ
+          value: {{ .Values.tz }}
         volumeMounts:
         - name: config
           mountPath: "/etc/nginx/conf.d/peertube.conf"

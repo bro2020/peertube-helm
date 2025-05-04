@@ -5,6 +5,7 @@
 namespace: peertube
 defaultName: ua
 env: dev # "dev" or "prod"
+tz: Europe/Kyiv
 
 # This is to override the chart name.
 nameOverride: ""
@@ -334,6 +335,22 @@ secrets:
   proxy:
   peertube:
     secret: 00eac1ad66135e005d884bc7ec93459461df00726f48cb37a1c0b6417979e41e
+    trustProxy: ["127.0.0.1", "loopback", "10.0.0.0/8", "192.168.0.0/16"]
+    dbSsl: false
+    dbSuffix:  # _dev or _prod
+    webserverPort: 9000
+    webserverHttps: false
+    logLevel: info
+    signupEnabled: true
+    transcodingEnabled: true
+    contactFormEnabled: true
+    smtpUsername:
+    smtpPassword:
+    smtpPort: 25
+    smtpFrom: noreply@peertube.example.com
+    smtpTls: false
+    smtpDisableStarttls: false
+    smtpAdminEmail: mail@@peertube.example.com
   pg:
     dbName: peertube
     dbUser: peertube

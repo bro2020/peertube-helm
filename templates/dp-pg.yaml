@@ -64,6 +64,24 @@ spec:
         resources:
           {{- toYaml . | nindent 10 }}
         {{- end }}
+        env:
+        - name: TZ
+          value: {{ .Values.tz }}
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.pg.fullname" . }}-env
+              key: postgres-db
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.pg.fullname" . }}-env
+              key: postgres-user
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.pg.fullname" . }}-env
+              key: postgres-password
         volumeMounts:
         - name: pg-data
           mountPath: "/var/lib/postgresql/data"

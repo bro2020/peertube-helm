@@ -65,6 +65,19 @@ spec:
           {{- toYaml . | nindent 10 }}
         {{- end }}
         {{- with .Values.postfix.volumeMounts }}
+        env:
+        - name: TZ
+          value: {{ .Values.tz }}
+        - name: POSTFIX_myhostname
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.peertube.fullname" . }}-env
+              key: peertube-webserver-hostname
+        - name: OPENDKIM_DOMAINS
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.peertube.fullname" . }}-env
+              key: peertube-webserver-hostname
         volumeMounts:
           {{- toYaml . | nindent 10 }}
         {{- end }}

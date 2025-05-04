@@ -5,6 +5,7 @@
 namespace: peertube
 defaultName: prod
 env: prod # "dev" or "prod"
+tz: Europe/Kyiv
 
 # This is to override the chart name.
 nameOverride: ""
