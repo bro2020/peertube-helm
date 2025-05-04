@@ -1,0 +1,23 @@
+{{- if .Values.postfix.service }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "peertube.postfix.fullname" . }}
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.postfix.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.postfix.service.type }}
+  ports:
+  {{- range .Values.postfix.service.ports }}
+  - name: {{ default "unknown" .name }}
+    port: {{ .port }}
+    {{- if .nodePort }}
+    nodePort: {{ .nodePort }}
+    {{- end }}
+    targetPort: {{ default .port .targetPort }}
+    protocol: {{ .protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "peertube.postfix.selectorLabels" . | nindent 4 }}
+{{- end }}
