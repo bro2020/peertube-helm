@@ -304,7 +304,7 @@ autoscaling:
 
 # cert-manager params
 certManager:
-  enable: false
+  enable: true
   namespace: cert-manager
 
 # Common assets and node data storage
