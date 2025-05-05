@@ -57,8 +57,10 @@ tz: Europe/Kyiv
 #     tcpSocket:
 #       port: 80
 #   readinessProbe:
-#     tcpSocket:
-#       port: 80
+#     exec:
+#       command:
+#       - curl
+#       - "http://localhost:9000/api/v1/ping"
 #   volumes: []
 #
 # node:
@@ -104,8 +106,10 @@ tz: Europe/Kyiv
 #     tcpSocket:
 #       port: 9000
 #   readinessProbe:
-#     tcpSocket:
-#       port: 9000
+#     exec:
+#       command:
+#       - curl
+#       - "http://localhost:9000/api/v1/ping"
 #   volumes: []
 #
 # pg:
@@ -233,7 +237,7 @@ tz: Europe/Kyiv
 #     # runAsNonRoot: true
 #     # runAsUser: 1000
 #   service:
-#     type: NodePort
+#     type: ClusterIP
 #     ports:
 #     - name: smtp
 #       port: 25
