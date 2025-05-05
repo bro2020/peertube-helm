@@ -239,12 +239,6 @@ tz: Europe/Kyiv
 #       port: 25
 #       targetPort: smtp
 #       protocol: TCP
-#       nodePort: 3025
-#     - name: smtps
-#       port: 465
-#       targetPort: smtps
-#       protocol: TCP
-#       nodePort: 3465
 #   resources: {}
 #   # limits:
 #   #   cpu: 100m
@@ -252,13 +246,16 @@ tz: Europe/Kyiv
 #   # requests:
 #   #   cpu: 100m
 #   #   memory: 128Mi
-#   volumeMounts: []
 #   livenessProbe:
-#     tcpSocket:
-#       port: 25
-#   readinessProbe:
-#     tcpSocket:
-#       port: 25
+#     exec:
+#       command:
+#       - postfix
+#       - status
+#   readinessProbe: {}
+#     # exec:
+#     #   command:
+#     #   - postfix
+#     #   - status
 #   # Can be set "storage" and "volumes" or "hostPath"
 #   volumes: []
 #   storage: {}

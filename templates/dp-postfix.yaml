@@ -24,6 +24,10 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      hostAliases:
+      - ip: "127.0.0.1"
+        hostnames:
+        - "{{ .Values.secrets.postfix.myHostname }}"
       {{- with .Values.postfix.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}

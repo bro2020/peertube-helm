@@ -50,7 +50,7 @@ spec:
         - -c
         - |
           cp -Hvrfp /srv/config/* /config/
-          cp -arf /app/client/dist/* /srv/app/client/dist/
+          cp -vrfpu /app/client/dist/* /srv/app/client/dist/
           exec /usr/local/bin/entrypoint.sh /usr/local/bin/node dist/server
         ports:
         {{- range .Values.node.service.ports }}
