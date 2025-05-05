@@ -57,10 +57,8 @@ proxy:
     tcpSocket:
       port: 80
   readinessProbe: {}
-    # httpGet:
-    #   path: /
-    #   port: https
-    #   scheme: HTTPS
+    tcpSocket:
+      port: 80
   volumes: []
 
 node:
