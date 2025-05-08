@@ -98,6 +98,11 @@ tz: Europe/Kyiv
 #       targetPort: rtmp
 #       protocol: TCP
 #       nodePort: 1935
+#     - name: rtmps
+#       port: 1936
+#       targetPort: rtmps
+#       protocol: TCP
+#       nodePort: 1936
 #   resources: {}
 #   # limits:
 #   #   cpu: 100m
