@@ -281,6 +281,48 @@ tz: Europe/Kyiv
 #     postfixData:
 #       path: "/mnt/peertube/postfix"
 #
+# runner:
+#   image:
+#     name: "bro2020/peertube-runner-rockchip"
+#     tag: "latest"
+#     pullPolicy: Always
+#   replicaCount: 1
+#   nodeSelector: {}
+#   tolerations: []
+#   affinity: {}
+#   imagePullSecrets: []
+#   podAnnotations: {}
+#   podLabels: {}
+#   podSecurityContext: {}
+#   securityContext: {}
+#     # capabilities:
+#     #   drop:
+#     #   - ALL
+#     # readOnlyRootFilesystem: true
+#     # runAsNonRoot: true
+#     # runAsUser: 1000
+#   service: {}
+#   resources: {}
+#   # limits:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+#   # requests:
+#   #   cpu: 100m
+#   #   memory: 128Mi
+#   volumeMounts: []
+#   livenessProbe: {}
+#   readinessProbe: {}
+#   # Need set "storage" and "volumes" or "hostPath"
+#   volumes: []
+#   storage: {}
+#     # runnerData:
+#     #   accessModes: ReadWriteMany
+#     #   storageSize: 1G
+#     #   storageClassName: lvm-storage
+#   hostPath:
+#     runnerData:
+#       path: "/mnt/peertube/runner"
+#
 # # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 # serviceAccount:
 #   # Specifies whether a service account should be created

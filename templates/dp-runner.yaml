@@ -1,0 +1,133 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "peertube.runner.fullname" . }}
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.runner.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.runner.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "peertube.runner.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "peertube.runner.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.runner.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "peertube.serviceAccountName" . }}
+      {{- with .Values.runner.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: runner
+        {{- with .Values.runner.PodSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.runner.image.name }}:{{ .Values.runner.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.runner.image.pullPolicy }}
+        workingDir: {{ .Values.secrets.runner.home | toString }}
+        ports:
+        {{- range .Values.runner.service.ports }}
+        {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
+        - name: {{ default "unknown" .name }}
+          containerPort: {{ .targetPort }}
+        {{- else }}
+        - name: {{ default .name .targetPort }}
+          containerPort: {{ .port }}
+        {{- end }}
+          protocol: {{ .protocol | default "TCP" }}
+        {{- end }}
+        {{- with .Values.runner.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.runner.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.runner.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        env:
+        - name: TZ
+          value: {{ .Values.tz }}
+        - name: USER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: user-name
+        - name: HOME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: home
+        - name: PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_NAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: registered-instance-runner-name
+        - name: PEERTUBE_RUNNER_{{ default "default" .Values.secrets.runner.registeredInstanceRunnerName | toString }}_REGISTERED_INSTANCE_URL
+          value: http://{{ include "peertube.node.fullname" . }}.{{ include "peertube.namespace" . }}.svc:9000
+        - name: PEERTUBE_RUNNER_{{  default "default" .Values.secrets.runner.registeredInstanceRunnerName | toString }}_REGISTERED_INSTANCE_RUNNER_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: registered-instance-runner-token
+        - name: PEERTUBE_RUNNER_JOBS_CONCURRENCY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: jobs-concurrency
+        - name: PEERTUBE_RUNNER_FFMPEF_THREADS
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: ffmpeg-threads
+        volumeMounts:
+        - name: runner-data
+          mountPath: "{{ .Values.secrets.runner.home | toString }}"
+        {{- with .Values.runner.volumeMounts }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      volumes:
+      - name: runner-data
+        {{- if (hasKey .Values.runner.hostPath "runnerData") }}
+        hostPath:
+          path: "{{ .Values.runner.hostPath.runnerData.path }}"
+          type: Directory
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ include "peertube.runner.fullname" . }}-data
+        {{- end }}
+      {{- with .Values.runner.volumes }}
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.runner.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.runner.affinity }}
+      affinity:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.runner.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}

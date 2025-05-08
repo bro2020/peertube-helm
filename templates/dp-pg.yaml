@@ -34,7 +34,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: proxy
+      - name: pg
         {{- with .Values.pg.PodSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}

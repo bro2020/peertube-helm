@@ -34,7 +34,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: proxy
+      - name: redis
         {{- with .Values.redis.PodSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}

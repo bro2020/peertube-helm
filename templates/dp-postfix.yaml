@@ -38,7 +38,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - name: proxy
+      - name: postfix
         {{- with .Values.postfix.PodSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}

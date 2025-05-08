@@ -52,6 +52,13 @@ Expand the postfix name of the chart.
 {{- end }}
 
 {{/*
+Expand the runner name of the chart.
+*/}}
+{{- define "peertube.runner.name" -}}
+{{- printf "%s-runner" ( include "peertube.name" . ) | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
@@ -174,6 +181,26 @@ Create a default fully qualified postfix name.
 {{- end }}
 
 {{/*
+Create a default fully qualified runner name.
+*/}}
+{{- define "peertube.runner.fullname" -}}
+{{- if .Values.fullnameOverride }}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- $name := default .Chart.Name .Values.nameOverride }}
+{{- if contains $name .Release.Name }}
+{{- .Release.Name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- if eq .Release.Name "release-name" }}
+{{- printf "%s-%s-runner" .Values.defaultName $name | trunc 63 | trimSuffix "-" }}
+{{- else }}
+{{- printf "%s-%s-runner" .Release.Name $name | trunc 63 | trimSuffix "-" }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "peertube.chart" -}}
@@ -253,6 +280,18 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Common runner labels
+*/}}
+{{- define "peertube.runner.labels" -}}
+helm.sh/chart: {{ include "peertube.chart" . }}
+{{ include "peertube.runner.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "peertube.selectorLabels" -}}
@@ -317,6 +356,18 @@ Selector postfix labels
 */}}
 {{- define "peertube.postfix.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "peertube.postfix.name" . }}
+{{- if eq .Release.Name "release-name" }}
+app.kubernetes.io/instance: {{ .Values.defaultName }}
+{{- else }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+{{- end }}
+
+{{/*
+Selector runner labels
+*/}}
+{{- define "peertube.runner.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "peertube.runner.name" . }}
 {{- if eq .Release.Name "release-name" }}
 app.kubernetes.io/instance: {{ .Values.defaultName }}
 {{- else }}
