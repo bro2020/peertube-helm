@@ -1,0 +1,23 @@
+{{- if .Values.node.serviceRtmp }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "peertube.node.fullname" . }}-rtmp
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.node.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.node.serviceRtmp.type }}
+  ports:
+  {{- range .Values.node.serviceRtmp.ports }}
+  - name: {{ default "unknown" .name }}
+    port: {{ .port }}
+    {{- if .nodePort }}
+    nodePort: {{ .nodePort }}
+    {{- end }}
+    targetPort: {{ default .port .targetPort }}
+    protocol: {{ .protocol | default "TCP" }}
+  {{- end }}
+  selector:
+    {{- include "peertube.node.selectorLabels" . | nindent 4 }}
+{{- end }}

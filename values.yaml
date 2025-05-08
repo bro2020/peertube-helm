@@ -90,10 +90,14 @@ node:
       port: 9000
       targetPort: peertube
       protocol: TCP
+  serviceRtmp:
+    type: NodePort
+    ports:
     - name: rtmp
       port: 1935
       targetPort: rtmp
       protocol: TCP
+      nodePort: 1935
   resources: {}
   # limits:
   #   cpu: 100m

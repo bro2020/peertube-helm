@@ -50,10 +50,21 @@ spec:
         - -c
         - |
           cp -Hvrfp /srv/config/* /config/
-          cp -vrfpu /app/client/dist/* /srv/app/client/dist/
+          rm -rf /srv/app/client/dist/*
+          cp -vrfp /app/client/dist/* /srv/app/client/dist/
           exec /usr/local/bin/entrypoint.sh /usr/local/bin/node dist/server
         ports:
         {{- range .Values.node.service.ports }}
+        {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
+        - name: {{ default "unknown" .name }}
+          containerPort: {{ .targetPort }}
+        {{- else }}
+        - name: {{ default .name .targetPort }}
+          containerPort: {{ .port }}
+        {{- end }}
+          protocol: {{ .protocol | default "TCP" }}
+        {{- end }}
+        {{- range .Values.node.serviceRtmp.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
         - name: {{ default "unknown" .name }}
           containerPort: {{ .targetPort }}
