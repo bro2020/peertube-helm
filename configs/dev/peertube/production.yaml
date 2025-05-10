@@ -88,3 +88,6 @@ tracker:
 
 admin:
   email: null
+
+signup:
+  enabled: false

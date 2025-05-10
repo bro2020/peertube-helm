@@ -362,7 +362,7 @@ autoscaling:
 
 # cert-manager params
 certManager:
-  enable: false
+  enable: true
   namespace: cert-manager
 
 # Common assets and node data storage
@@ -382,3 +382,11 @@ data:
     # storageClassName: lvm-storage
   hostPath:
     path: "/mnt/peertube/data"
+config:
+  ## Need set "storage" or "hostPath"
+  storage: {}
+    # accessModes: ReadWriteMany
+    # storageSize: 1G
+    # storageClassName: lvm-storage
+  hostPath:
+    path: "/mnt/peertube/config"

@@ -382,3 +382,11 @@ tz: Europe/Kyiv
 #     # storageClassName: lvm-storage
 #   hostPath:
 #     path: "/mnt/peertube/data"
+# config:
+#   ## Need set "storage" or "hostPath"
+#   storage: {}
+#     # accessModes: ReadWriteMany
+#     # storageSize: 1G
+#     # storageClassName: lvm-storage
+#   hostPath:
+#     path: "/mnt/peertube/config"

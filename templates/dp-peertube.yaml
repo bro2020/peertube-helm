@@ -37,8 +37,8 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      containers:
-      - name: peertube
+      initContainers:
+      - name: peertube-init
         {{- with .Values.node.PodSecurityContext }}
         securityContext:
           {{- toYaml . | nindent 10 }}
@@ -49,10 +49,36 @@ spec:
         - /bin/bash
         - -c
         - |
-          cp -Hvrfp /srv/config/* /config/
-          rm -rf /srv/app/client/dist/*
+          rm -rf /srv/app/client/dist/{*,.*}
           cp -vrfp /app/client/dist/* /srv/app/client/dist/
-          exec /usr/local/bin/entrypoint.sh /usr/local/bin/node dist/server
+          cp -vrfpH /config/* /srv/config/
+        env:
+        - name: TZ
+          value: {{ .Values.tz }}
+        volumeMounts:
+        - name: assets
+          mountPath: "/srv/app/client/dist"
+        - name: config-prod
+          mountPath: "/config/production.yaml"
+          subPath: "production.yaml"
+        - name: config-custom-env
+          mountPath: "/config/custom-environment-variables.yaml"
+          subPath: "custom-environment-variables.yaml"
+        - name: config
+          mountPath: "/srv/config"
+      containers:
+      - name: peertube
+        {{- with .Values.node.PodSecurityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.node.image.name }}:{{ .Values.node.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.node.image.pullPolicy }}
+        command:
+        - /usr/local/bin/entrypoint.sh
+        args:
+        - /usr/local/bin/node
+        - dist/server
         ports:
         {{- range .Values.node.service.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
@@ -193,25 +219,30 @@ spec:
               key: peertube-admin-email
         volumeMounts:
         - name: config
-          mountPath: "/srv/config/production.yaml"
-          subPath: "production.yaml"
-        - name: custom-env-config
-          mountPath: "/srv/config/custom-environment-variables.yaml"
-          subPath: "custom-environment-variables.yaml"
+          mountPath: "/config"
         - name: assets
-          mountPath: "/srv/app/client/dist"
+          mountPath: "/app/client/dist"
         - name: data
           mountPath: "/data"
         {{- with .Values.node.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
       volumes:
-      - name: config
+      - name: config-prod
         secret:
-          secretName: {{ include "peertube.node.fullname" . }}-config
-      - name: custom-env-config
+          secretName: {{ include "peertube.node.fullname" . }}-config-prod
+      - name: config-custom-env
         configMap:
-          name: {{ include "peertube.node.fullname" . }}-custom-env-config
+          name: {{ include "peertube.node.fullname" . }}-config-custom-env
+      - name: config
+        {{- if (hasKey .Values.config "hostPath") }}
+        hostPath:
+          path: "{{ .Values.config.hostPath.path }}"
+          type: Directory
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ include "peertube.fullname" . }}-config
+        {{- end }}
       - name: assets
         {{- if (hasKey .Values.assets "hostPath") }}
         hostPath:

@@ -89,7 +89,7 @@ spec:
       - name: config
         configMap:
           name: {{ include "peertube.proxy.fullname" . }}-config
-      {{- if .Values.certManager.enable }}
+      {{- if and  (.Values.certManager.enable) (.Values.secrets.proxy.sslEnable) }}
       - name: tls
         secret:
           secretName: {{ include "peertube.fullname" . }}-tls

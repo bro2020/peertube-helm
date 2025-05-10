@@ -100,3 +100,20 @@ spec:
   storageClassName: {{ .Values.runner.storage.runnerData.storageClassName }}
 ---
 {{- end }}
+{{- if .Values.config.storage }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "peertube.fullname" . }}-config
+  namespace: {{ include "peertube.namespace" . }}
+  labels:
+    {{- include "peertube.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - {{ .Values.config.storage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.config.storage.storageSize }}
+  storageClassName: {{ .Values.config.storage.storageClassName }}
+---
+{{- end }}

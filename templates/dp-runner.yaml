@@ -42,6 +42,14 @@ spec:
         image: "{{ .Values.runner.image.name }}:{{ .Values.runner.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.runner.image.pullPolicy }}
         workingDir: {{ .Values.secrets.runner.home | toString }}
+        command:
+        - /bin/bash
+        - -c
+        - |
+          echo "${{ include "peertube.proxy.fullname" . | replace "-" "_" | upper }}_SERVICE_HOST {{ default "default" .Values.secrets.common.domain | toString }}" >> /etc/hosts
+          /usr/local/bin/entrypoint
+          peertube-runner register --url ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_URL} --registration-token ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_TOKEN} --runner-name ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_NAME}
+          exec peertube-runner server
         ports:
         {{- range .Values.runner.service.ports }}
         {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
@@ -83,9 +91,9 @@ spec:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
               key: registered-instance-runner-name
-        - name: PEERTUBE_RUNNER_{{ default "default" .Values.secrets.runner.registeredInstanceRunnerName | toString }}_REGISTERED_INSTANCE_URL
-          value: http://{{ include "peertube.node.fullname" . }}.{{ include "peertube.namespace" . }}.svc:9000
-        - name: PEERTUBE_RUNNER_{{  default "default" .Values.secrets.runner.registeredInstanceRunnerName | toString }}_REGISTERED_INSTANCE_RUNNER_TOKEN
+        - name: PEERTUBE_RUNNER_REGISTERED_INSTANCE_URL
+          value: https://{{ default "default" .Values.secrets.common.domain | toString }}
+        - name: PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_TOKEN
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
