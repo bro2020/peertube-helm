@@ -9,6 +9,8 @@ spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.runner.replicaCount }}
   {{- end }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       {{- include "peertube.runner.selectorLabels" . | nindent 6 }}
@@ -29,14 +31,17 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "peertube.serviceAccountName" . }}
-      {{- with .Values.runner.securityContext }}
       securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+      {{- with .Values.runner.securityContext }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      containers:
-      - name: runner
-        {{- with .Values.runner.PodSecurityContext }}
+      initContainers:
+      - name: runner-init
         securityContext:
+          runAsUser: 0
+        {{- with .Values.runner.PodSecurityContext }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
         image: "{{ .Values.runner.image.name }}:{{ .Values.runner.image.tag | default .Chart.AppVersion }}"
@@ -46,33 +51,28 @@ spec:
         - /bin/bash
         - -c
         - |
+          conf_path="${HOME}/.config/peertube-runner-nodejs/default"
           echo "${{ include "peertube.proxy.fullname" . | replace "-" "_" | upper }}_SERVICE_HOST {{ default "default" .Values.secrets.common.domain | toString }}" >> /etc/hosts
-          /usr/local/bin/entrypoint
-          peertube-runner register --url ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_URL} --registration-token ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_TOKEN} --runner-name ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_NAME}
-          exec peertube-runner server
-        ports:
-        {{- range .Values.runner.service.ports }}
-        {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
-        - name: {{ default "unknown" .name }}
-          containerPort: {{ .targetPort }}
-        {{- else }}
-        - name: {{ default .name .targetPort }}
-          containerPort: {{ .port }}
-        {{- end }}
-          protocol: {{ .protocol | default "TCP" }}
-        {{- end }}
-        {{- with .Values.runner.livenessProbe }}
-        livenessProbe:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
-        {{- with .Values.runner.readinessProbe }}
-        readinessProbe:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
-        {{- with .Values.runner.resources }}
-        resources:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
+          addgroup render -gid $(stat /dev/dri/renderD128 --format "%g")
+          if ! (cat /etc/passwd | grep -q ${USER_NAME});then
+            adduser ${USER_NAME} --home "${HOME}"
+          fi
+          chown -R ${USER_NAME}:${USER_NAME} "${HOME}"
+          cp -af /etc/* /srv/etc/
+          if [ ! -d "${conf_path}" ];then
+            su ${USER_NAME} -c "mkdir -vp \"${conf_path}\""
+          fi
+          if ! (grep -rq "\[jobs\]" "${conf_path}");then
+            printf "[jobs]\nconcurrency = ${PEERTUBE_RUNNER_JOBS_CONCURRENCY}\n\n[ffmpeg]\nthreads = ${PEERTUBE_RUNNER_FFMPEG_THREADS}\nnice = ${PEERTUBE_RUNNER_FFMPEG_NICE}\n" >> "${conf_path}/config.toml"
+            chown -R ${USER_NAME}:${USER_NAME} "${conf_path}"
+          fi
+          if ! (grep -rq "${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_NAME}" "${conf_path}");then
+            su ${USER_NAME} -c "peertube-runner server" &
+            ppid=$!
+            sleep 1
+            su ${USER_NAME} -c "peertube-runner register --url ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_URL} --registration-token ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_TOKEN} --runner-name ${PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_NAME}"
+            kill -9 $ppid
+          fi
         env:
         - name: TZ
           value: {{ .Values.tz }}
@@ -103,18 +103,83 @@ spec:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
               key: jobs-concurrency
-        - name: PEERTUBE_RUNNER_FFMPEF_THREADS
+        - name: PEERTUBE_RUNNER_FFMPEG_THREADS
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
               key: ffmpeg-threads
+        - name: PEERTUBE_RUNNER_FFMPEG_NICE
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "peertube.runner.fullname" . }}-env
+              key: ffmpeg-nice
         volumeMounts:
         - name: runner-data
           mountPath: "{{ .Values.secrets.runner.home | toString }}"
+        - name: dri
+          mountPath: "/dev/dri"
+        - name: etc
+          mountPath: /srv/etc
+      containers:
+      - name: runner
+        securityContext:
+          privileged: true
+        {{- with .Values.runner.PodSecurityContext }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        image: "{{ .Values.runner.image.name }}:{{ .Values.runner.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.runner.image.pullPolicy }}
+        workingDir: {{ .Values.secrets.runner.home | toString }}
+        command:
+        - /bin/bash
+        - -c
+        - |
+          exec peertube-runner server
+        ports:
+        {{- range .Values.runner.service.ports }}
+        {{- if or (typeIsLike "int" .targetPort) (typeIsLike "int64" .targetPort) (typeIsLike "float64" .targetPort) }}
+        - name: {{ default "unknown" .name }}
+          containerPort: {{ .targetPort }}
+        {{- else }}
+        - name: {{ default .name .targetPort }}
+          containerPort: {{ .port }}
+        {{- end }}
+          protocol: {{ .protocol | default "TCP" }}
+        {{- end }}
+        {{- with .Values.runner.livenessProbe }}
+        livenessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.runner.readinessProbe }}
+        readinessProbe:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .Values.runner.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        env:
+        - name: TZ
+          value: {{ .Values.tz }}
+        volumeMounts:
+        - name: runner-data
+          mountPath: "{{ .Values.secrets.runner.home | toString }}"
+        - name: dri
+          mountPath: "/dev/dri"
+        - name: dma-heap
+          mountPath: "/dev/dma_heap"
+        - name: rga
+          mountPath: "/dev/rga"
+        - name: mpp-service
+          mountPath: "/dev/mpp_service"
+        - name: etc
+          mountPath: /etc
         {{- with .Values.runner.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
       volumes:
+      - name: etc
+        emptyDir: {}
       - name: runner-data
         {{- if (hasKey .Values.runner.hostPath "runnerData") }}
         hostPath:
@@ -124,6 +189,18 @@ spec:
         persistentVolumeClaim:
           claimName: {{ include "peertube.runner.fullname" . }}-data
         {{- end }}
+      - name: dri
+        hostPath:
+          path: /dev/dri
+      - name: dma-heap
+        hostPath:
+          path: /dev/dma_heap
+      - name: rga
+        hostPath:
+          path: /dev/rga
+      - name: mpp-service
+        hostPath:
+          path: /dev/mpp_service
       {{- with .Values.runner.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
