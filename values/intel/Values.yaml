@@ -4,7 +4,7 @@
 #
 namespace: peertube
 defaultName: dev
-env: dev # "dev" or "prod"
+env: intel # "intel" or "rockchip"
 tz: Europe/Kyiv
 #
 # # This is to override the chart name.
@@ -285,7 +285,7 @@ tz: Europe/Kyiv
 #     name: "bro2020/peertube-runner-rockchip"
 #     tag: "latest"
 #     pullPolicy: Always
-#   replicaCount: 1
+#   replicaCount: 0
 #   nodeSelector: {}
 #   tolerations: []
 #   affinity: {}

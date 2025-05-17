@@ -4,7 +4,7 @@
 #
 namespace: peertube
 defaultName: prod
-env: prod # "dev" or "prod"
+env: rockchip # "intel" or "rockchip"
 tz: Europe/Kyiv
 #
 # # This is to override the chart name.
@@ -65,8 +65,8 @@ tz: Europe/Kyiv
 #
 # node:
 #   image:
-#     name: "chocobozzz/peertube"
-#     tag: "production-bookworm"
+#     name: "bro2020/peertube-rockchip"
+#     tag: "latest"
 #     pullPolicy: Always
 #   replicaCount: 1
 #   nodeSelector: {}
@@ -286,7 +286,7 @@ tz: Europe/Kyiv
 #     name: "bro2020/peertube-runner-rockchip"
 #     tag: "latest"
 #     pullPolicy: Always
-#   replicaCount: 1
+#   replicaCount: 0
 #   nodeSelector: {}
 #   tolerations: []
 #   affinity: {}

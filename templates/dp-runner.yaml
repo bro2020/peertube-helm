@@ -171,12 +171,14 @@ spec:
           mountPath: "{{ .Values.secrets.runner.home | toString }}"
         - name: dri
           mountPath: "/dev/dri"
+        {{- if eq .Values.env "rockchip" }}
         - name: dma-heap
           mountPath: "/dev/dma_heap"
         - name: rga
           mountPath: "/dev/rga"
         - name: mpp-service
           mountPath: "/dev/mpp_service"
+        {{- end }}
         - name: etc
           mountPath: /etc
         {{- with .Values.runner.volumeMounts }}
@@ -197,6 +199,7 @@ spec:
       - name: dri
         hostPath:
           path: /dev/dri
+      {{- if eq .Values.env "rockchip" }}
       - name: dma-heap
         hostPath:
           path: /dev/dma_heap
@@ -206,6 +209,7 @@ spec:
       - name: mpp-service
         hostPath:
           path: /dev/mpp_service
+      {{- end }}
       {{- with .Values.runner.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}

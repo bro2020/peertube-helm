@@ -68,8 +68,9 @@ spec:
           mountPath: "/srv/config"
       containers:
       - name: peertube
-        {{- with .Values.node.PodSecurityContext }}
         securityContext:
+          privileged: true
+        {{- with .Values.node.PodSecurityContext }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
         image: "{{ .Values.node.image.name }}:{{ .Values.node.image.tag | default .Chart.AppVersion }}"
@@ -224,6 +225,16 @@ spec:
           mountPath: "/app/client/dist"
         - name: data
           mountPath: "/data"
+        - name: dri
+          mountPath: "/dev/dri"
+        {{- if eq .Values.env "rockchip" }}
+        - name: dma-heap
+          mountPath: "/dev/dma_heap"
+        - name: rga
+          mountPath: "/dev/rga"
+        - name: mpp-service
+          mountPath: "/dev/mpp_service"
+        {{- end }}
         {{- with .Values.node.volumeMounts }}
           {{- toYaml . | nindent 10 }}
         {{- end }}
@@ -261,6 +272,20 @@ spec:
         persistentVolumeClaim:
           claimName: {{ include "peertube.fullname" . }}-data
         {{- end }}
+      - name: dri
+        hostPath:
+          path: /dev/dri
+      {{- if eq .Values.env "rockchip" }}
+      - name: dma-heap
+        hostPath:
+          path: /dev/dma_heap
+      - name: rga
+        hostPath:
+          path: /dev/rga
+      - name: mpp-service
+        hostPath:
+          path: /dev/mpp_service
+      {{- end }}
       {{- with .Values.node.volumes }}
         {{- toYaml . | nindent 6 }}
       {{- end }}
