@@ -71,17 +71,17 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.pg.fullname" . }}-env
-              key: postgres-db
+              key: postgres_db
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.pg.fullname" . }}-env
-              key: postgres-user
+              key: postgres_user
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.pg.fullname" . }}-env
-              key: postgres-password
+              key: postgres_password
         volumeMounts:
         - name: pg-data
           mountPath: "/var/lib/postgresql/data"

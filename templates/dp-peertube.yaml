@@ -120,104 +120,104 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-secret
+              key: peertube_secret
         - name: PEERTUBE_TRUST_PROXY
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-trust-proxy
+              key: peertube_trust_proxy
         - name: PEERTUBE_WEBSERVER_HOSTNAME
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-webserver-hostname
+              key: peertube_webserver_hostname
         - name: PEERTUBE_WEBSERVER_PORT
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-webserver-port
+              key: peertube_webserver_port
         - name: PEERTUBE_WEBSERVER_HTTPS
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-webserver-https
+              key: peertube_webserver_https
         - name: PEERTUBE_DB_NAME
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-db-name
+              key: peertube_db_name
         - name: PEERTUBE_DB_SUFFIX
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-db-suffix
+              key: peertube_db_suffix
         - name: PEERTUBE_DB_USERNAME
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-db-username
+              key: peertube_db_username
         - name: PEERTUBE_DB_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-db-password
+              key: peertube_db_password
         - name: PEERTUBE_DB_SSL
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-db-ssl
+              key: peertube_db_ssl
         - name: PEERTUBE_LOG_LEVEL
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-log-level
+              key: peertube_log_level
         - name: PEERTUBE_SIGNUP_ENABLED
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-signup-enabled
+              key: peertube_signup_enabled
         - name: PEERTUBE_TRANSCODING_ENABLED
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-transcoding-enabled
+              key: peertube_transcoding_enabled
         - name: PEERTUBE_SMTP_USERNAME
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-smtp-username
+              key: peertube_smtp_username
         - name: PEERTUBE_SMTP_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-smtp-password
+              key: peertube_smtp_password
         - name: PEERTUBE_SMTP_HOSTNAME
           value: {{ include "peertube.postfix.fullname" . }}.{{ include "peertube.namespace" . }}.svc
         - name: PEERTUBE_SMTP_PORT
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-smtp-port
+              key: peertube_smtp_port
         - name: PEERTUBE_SMTP_FROM
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-smtp-from
+              key: peertube_smtp_from
         - name: PEERTUBE_SMTP_TLS
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-smtp-tls
+              key: peertube_smtp_tls
         - name: PEERTUBE_SMTP_DISABLE_STARTTLS
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-smtp-disable-starttls
+              key: peertube_smtp_disable_starttls
         - name: PEERTUBE_ADMIN_EMAIL
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.node.fullname" . }}-env
-              key: peertube-admin-email
+              key: peertube_admin_email
         volumeMounts:
         - name: config
           mountPath: "/config"

@@ -75,17 +75,17 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.postfix.fullname" . }}-env
-              key: postfix-myhostname
+              key: postfix_myhostname
         - name: OPENDKIM_DOMAINS
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.postfix.fullname" . }}-env
-              key: opendkim-domains
+              key: opendkim_domains
         - name: OPENDKIM_RequireSafeKeys
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.postfix.fullname" . }}-env
-              key: opendkim-requiresafekeys
+              key: opendkim_require_safe_keys
         volumeMounts:
         - name: postfix-data
           mountPath: "/etc/opendkim/keys"

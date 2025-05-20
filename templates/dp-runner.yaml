@@ -85,7 +85,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
-              key: user-name
+              key: user_name
         - name: HOME
           valueFrom:
             secretKeyRef:
@@ -95,29 +95,29 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
-              key: registered-instance-runner-name
+              key: registered_instance_runner_name
         - name: PEERTUBE_RUNNER_REGISTERED_INSTANCE_URL
           value: https://{{ default "default" .Values.secrets.common.domain | toString }}
         - name: PEERTUBE_RUNNER_REGISTERED_INSTANCE_RUNNER_TOKEN
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
-              key: registered-instance-runner-token
+              key: registered_instance_runner_token
         - name: PEERTUBE_RUNNER_JOBS_CONCURRENCY
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
-              key: jobs-concurrency
+              key: jobs_concurrency
         - name: PEERTUBE_RUNNER_FFMPEG_THREADS
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
-              key: ffmpeg-threads
+              key: ffmpeg_threads
         - name: PEERTUBE_RUNNER_FFMPEG_NICE
           valueFrom:
             secretKeyRef:
               name: {{ include "peertube.runner.fullname" . }}-env
-              key: ffmpeg-nice
+              key: ffmpeg_nice
         volumeMounts:
         - name: runner-data
           mountPath: "{{ .Values.secrets.runner.home | toString }}"
