@@ -4,7 +4,7 @@
 #
 namespace: peertube
 defaultName: prod
-env: rockchip # "intel" or "rockchip"
+arch: rockchip # "intel", "amd" or "rockchip"
 tz: Europe/Kyiv
 #
 # # This is to override the chart name.

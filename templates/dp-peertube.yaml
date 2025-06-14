@@ -227,7 +227,7 @@ spec:
           mountPath: "/data"
         - name: dri
           mountPath: "/dev/dri"
-        {{- if eq .Values.env "rockchip" }}
+        {{- if eq .Values.arch "rockchip" }}
         - name: dma-heap
           mountPath: "/dev/dma_heap"
         - name: rga
@@ -275,7 +275,7 @@ spec:
       - name: dri
         hostPath:
           path: /dev/dri
-      {{- if eq .Values.env "rockchip" }}
+      {{- if eq .Values.arch "rockchip" }}
       - name: dma-heap
         hostPath:
           path: /dev/dma_heap

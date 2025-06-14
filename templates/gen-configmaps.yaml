@@ -10,10 +10,10 @@ metadata:
     {{- include "peertube.proxy.labels" . | nindent 4 }}
 data:
 {{- if .Values.secrets.proxy.ssl_enable }}
-{{- $path := printf "configs/%s/nginx/peertube-ssl.conf" .Values.env }}
+{{- $path := printf "configs/%s/nginx/peertube-ssl.conf" .Values.arch }}
 {{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | indent 2 }}
 {{- else }}
-{{- $path := printf "configs/%s/nginx/peertube.conf" .Values.env }}
+{{- $path := printf "configs/%s/nginx/peertube.conf" .Values.arch }}
 {{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | indent 2 }}
 {{- end }}
 ---
@@ -26,6 +26,6 @@ metadata:
   labels:
     {{- include "peertube.node.labels" . | nindent 4 }}
 data:
-{{- $path := printf "configs/%s/peertube/custom-environment-variables.yaml" .Values.env }}
+{{- $path := printf "configs/%s/peertube/custom-environment-variables.yaml" .Values.arch }}
 {{ ($.Files.Glob $path).AsConfig | indent 2 }}
 ---
