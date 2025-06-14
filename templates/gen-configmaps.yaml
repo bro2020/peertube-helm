@@ -11,10 +11,10 @@ metadata:
 data:
 {{- if .Values.secrets.proxy.ssl_enable }}
 {{- $path := printf "configs/%s/nginx/peertube-ssl.conf" .Values.arch }}
-{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | indent 2 }}
+{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | replace "${LIMIT_RATE}" .Values.secrets.proxy.limit_rate | indent 2 }}
 {{- else }}
 {{- $path := printf "configs/%s/nginx/peertube.conf" .Values.arch }}
-{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | indent 2 }}
+{{ ($.Files.Glob $path).AsConfig | replace "${WEBSERVER_HOST}" .Values.secrets.common.domain | replace "${PEERTUBE_HOST}" (printf "%s:9000" $nodeSvc) | replace "${LIMIT_RATE}" .Values.secrets.proxy.limit_rate | indent 2 }}
 {{- end }}
 ---
 # Generate configmap peertube custom env config
