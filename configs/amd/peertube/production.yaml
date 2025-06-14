@@ -79,15 +79,9 @@ object_storage:
     public: null # Set to null here because we can't using env variables
     private: null
 
-log:
-  level: 'info' # 'debug' | 'info' | 'warn' | 'error'
-
 tracker:
   enabled: true
   reject_too_many_announces: false # false because we have issues with docker ws ip/port forwarding
 
 admin:
   email: null
-
-signup:
-  enabled: false
