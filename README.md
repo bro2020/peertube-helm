@@ -1,7 +1,7 @@
 # peertube-helm
 Helm Chart for deploy peertube
 
-Project structure:
+## Project structure
 ```
 .
 ├── configs
@@ -69,11 +69,11 @@ Project structure:
 
 Some parameters are hardcoded in templates. Some parameters of peertube and additional services are placed in the `configs` directory and are converted to configmap or secret Kubernetes resources. Some parameters are set using the `Values.yaml` ​​file of the helm for the respective architectures in the corresponding subdirectories of the `values` directory. The most sensitive, most personal settings are set in a secrets file of the Values format of the helm file in subdirectories named `secrets`. Examples of such secrets files are given in the `Example.yaml` files.
 
-For the simplest deployment, you need to copy `Example.yaml` to another file name, for example `Secret.yaml`. Replace the data in it with current ones, and the secrets with more complex and secure ones.
+For the simplest deployment, you need to copy `Example.yaml` to another file name, for example `Secrets.yaml`. Replace the data in it with current ones, and the secrets with more complex and secure ones.
 
 Using this command, while in the root of the project, you can see which Kubernetes resources will be created:
 ```
-helm template . -f values/amd/Values.yaml -f values/amd/secrets/Secret.yaml
+helm template . -f values/amd/Values.yaml -f values/amd/secrets/Secrets.yaml
 ```
 The default settings are designed for deployment in a simple k3s cluster. With storages mounted by the `hostpath` method by the path in the host system `/mnt/peertube`. In the peertube namespace.\
 In order for deployments to run, the following subdirectories need to be created in advance:
@@ -86,3 +86,59 @@ In order for deployments to run, the following subdirectories need to be created
 /mnt/peertube/data
 ```
 If you are using a more complex cluster that has storage providers like `openebs` or `rook` or something else, in the Values ​​file you can replace the `hostpath` mount to the creation and mounting of `PersistensVolumeClaim`. In this case, you do not need to create directories on the Kubernetes host system.
+
+## Specific spec Values.yaml
+`namespace`: - This specifies the default namespace unless another one was specified during application installation.\
+`defaultName`: - This specifies the application name that will be used as the default prefix for all Kubernetes resource names. This value is used unless otherwise specified when the application was installed.\
+`arch`: - This specifies the architecture present in the configurations. The corresponding subdirectories and files should exist in the "configs" and "values" ​​directories.\
+`tz`: - This option will set the timezone environment variable for all application deployments.\
+`service`: - This describes the specification of the main service parameters that are specific to a specific deployment. The following fields are currently available:
+```
+    type: NodePort # or LoadBalancer
+    ports:
+    - name: port-name # or any other
+      port: 1234 # or any other
+      targetPort: portname # or any other
+      protocol: TCP # or UDP
+      nodePort: 4321 # or any other
+```
+But existing parameters cannot be edited.\
+`storage`: - This specifies the storage mount options for specific deployments when using PersistensVolumeClaim. Here is an example for redis:
+```
+    redisData:
+      accessModes: ReadWriteMany
+      storageSize: 1G # or any other
+      storageClassName: lvm-storage # from you storage provider
+```
+This will create and mount storage for redis.\
+`hostPath`: - This specifies the storage mount options for specific deployments when using hostpath.
+```
+    redisData:
+      path: "/mnt/peertube/redis"
+```
+The directory "/mnt/peertube/redis" must exist on the host system of the kubernetes node.\
+Some storage must be mounted by multiple deployments at the same time, so their specification is separate.\
+Here is an example of storage for "assets" using PersistensVolumeClaim:
+```
+assets:
+  storage:
+    accessModes: ReadWriteMany
+    storageSize: 1G # or any other
+    storageClassName: lvm-storage # from you storage provider
+```
+Here is an example of storage for "assets" using hostpath:
+```
+assets:
+  hostPath:
+    path: "/mnt/peertube/assets"
+```
+The directory "/mnt/peertube/assets" must exist on the host system of the kubernetes node.\
+`certManager`: - By default, it is assumed that `cert-manager` is already installed in the kubernetes cluster in the "cert-manager" namespace. However, this can be changed with this parameter. Available values:
+```
+  enable: true # or false
+  namespace: cert-manager # or any other
+```
+If set to "true", the "Clusterissuer" and "Certificate" will be installed for your application. The domain and credentials is used from the "Secrets.yaml" file.\
+All other parameters in Values ​​repeat the kubernetes specification, its description can be found in the kubernetes documentation.
+
+## Specific spec Secrets.yaml
