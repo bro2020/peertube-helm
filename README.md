@@ -103,6 +103,12 @@ If you are using a more complex cluster that has storage providers like `openebs
       nodePort: 4321 # or any other
 ```
 But existing parameters cannot be edited.\
+`certManager`: - By default, it is assumed that `cert-manager` is already installed in the kubernetes cluster in the "cert-manager" namespace. However, this can be changed with this parameter. Available values:
+```
+  enable: true # or false
+  namespace: cert-manager # or any other
+```
+If set to "true", the "Clusterissuer" and "Certificate" will be installed for your application. The domain and credentials is used from the "Secrets.yaml" file.\
 `storage`: - This specifies the storage mount options for specific deployments when using PersistensVolumeClaim. Here is an example for redis:
 ```
     redisData:
@@ -116,7 +122,8 @@ This will create and mount storage for redis.\
     redisData:
       path: "/mnt/peertube/redis"
 ```
-The directory "/mnt/peertube/redis" must exist on the host system of the kubernetes node.\
+The directory "/mnt/peertube/redis" must exist on the host system of the kubernetes node
+
 Some storage must be mounted by multiple deployments at the same time, so their specification is separate.\
 Here is an example of storage for "assets" using PersistensVolumeClaim:
 ```
@@ -133,12 +140,17 @@ assets:
     path: "/mnt/peertube/assets"
 ```
 The directory "/mnt/peertube/assets" must exist on the host system of the kubernetes node.\
-`certManager`: - By default, it is assumed that `cert-manager` is already installed in the kubernetes cluster in the "cert-manager" namespace. However, this can be changed with this parameter. Available values:
-```
-  enable: true # or false
-  namespace: cert-manager # or any other
-```
-If set to "true", the "Clusterissuer" and "Certificate" will be installed for your application. The domain and credentials is used from the "Secrets.yaml" file.\
+Ingress is disabled by default, as the default is to use a very simple kubernetes cluster, such as k3s.\
 All other parameters in Values ​​repeat the kubernetes specification, its description can be found in the kubernetes documentation.
 
 ## Specific spec Secrets.yaml
+It is important that all parameters present in Example.yaml are present in your secret!
+
+`common`: - These are common settings that are used by different deployments, services, and are relevant for the entire application as a whole, not just a part of it. This is where you set the domain of your application, for certificate configuration, and peertube itself.\
+`cert`: - Here are the specific settings for cert-manager. By default, the `CloudFlare` API is used.\
+`peertube`: - Here are the specific settings for peertube. Confidential and simply specific parameters specific to your application.\
+`pg`: - Here are the postgresql database credentials. Be sure to change them to something more difficult.\
+`postfix`: - Since peertube requires the use of a mail server, this application deploys a `postfix` relay, and its parameters are listed here. You can read more about them in the official peertube documentation.\
+`runner`: - There is also a peertube-runner deployment. However, because it does not yet know how to transcode with custom parameters, this deployment is disabled by default.\
+`proxy`: - Since the cluster should have cert-manager deployed by default. So by default `ssl` is enabled in the proxy configuration. At the moment it is `nginx`. If you set `false`, the nginx config without ssl will be used, but this config is designed for the fact that there is also a proxy server in front of it, on which ssl and `proxy_protocol` are enabled.
+`redis`: - No specific configuration or secrets yet
