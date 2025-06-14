@@ -152,5 +152,5 @@ It is important that all parameters present in Example.yaml are present in your 
 `pg`: - Here are the postgresql database credentials. Be sure to change them to something more difficult.\
 `postfix`: - Since peertube requires the use of a mail server, this application deploys a `postfix` relay, and its parameters are listed here. You can read more about them in the official peertube documentation.\
 `runner`: - There is also a peertube-runner deployment. However, because it does not yet know how to transcode with custom parameters, this deployment is disabled by default.\
-`proxy`: - Since the cluster should have cert-manager deployed by default. So by default `ssl` is enabled in the proxy configuration. At the moment it is `nginx`. If you set `false`, the nginx config without ssl will be used, but this config is designed for the fact that there is also a proxy server in front of it, on which ssl and `proxy_protocol` are enabled.
+`proxy`: - Since the cluster should have cert-manager deployed by default. So by default `ssl` is enabled in the proxy configuration. At the moment it is `nginx`. If you set `false`, the nginx config without ssl will be used, but this config is designed for the fact that there is also a proxy server in front of it, on which ssl and `proxy_protocol` are enabled.\
 `redis`: - No specific configuration or secrets yet
