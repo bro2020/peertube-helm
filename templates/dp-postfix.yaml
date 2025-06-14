@@ -27,7 +27,7 @@ spec:
       hostAliases:
       - ip: "127.0.0.1"
         hostnames:
-        - "{{ .Values.secrets.postfix.myHostname }}"
+        - "{{ .Values.secrets.postfix.my_hostname }}"
       {{- with .Values.postfix.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
