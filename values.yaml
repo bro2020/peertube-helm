@@ -65,8 +65,8 @@ proxy:
 
 node:
   image:
-    name: "bro2020/peertube-rockchip"
-    tag: "latest"
+    name: "chocobozzz/peertube"
+    tag: "production-bookworm"
     pullPolicy: Always
   replicaCount: 1
   nodeSelector: {}

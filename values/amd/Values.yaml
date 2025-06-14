@@ -3,7 +3,7 @@
 # # Declare variables to be passed into your templates.
 #
 namespace: peertube
-defaultName: dev
+defaultName: prod
 arch: amd # "intel", "amd" or "rockchip"
 tz: Europe/Kyiv
 #

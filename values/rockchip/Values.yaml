@@ -63,10 +63,10 @@ tz: Europe/Kyiv
 #       - "http://localhost:9000/api/v1/ping"
 #   volumes: []
 #
-# node:
-#   image:
-#     name: "bro2020/peertube-rockchip"
-#     tag: "latest"
+node:
+  image:
+    name: "bro2020/peertube-rockchip"
+    tag: "latest"
 #     pullPolicy: Always
 #   replicaCount: 1
 #   nodeSelector: {}
