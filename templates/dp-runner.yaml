@@ -32,7 +32,7 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "peertube.serviceAccountName" . }}
       securityContext:
-        {{- if eq (.Values.secrets.runner.userName | toString) "root" }}
+        {{- if eq (.Values.secrets.runner.user_name | toString) "root" }}
         runAsUser: 0
         runAsGroup: 0
         {{- else }}
