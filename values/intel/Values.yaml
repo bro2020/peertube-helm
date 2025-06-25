@@ -280,9 +280,9 @@ tz: Europe/Kyiv
 #     postfixData:
 #       path: "/mnt/peertube/postfix"
 #
-# runner:
-#   image:
-#     name: "bro2020/peertube-runner-rockchip"
+runner:
+  image:
+    name: "bro2020/peertube-runner-amd"
 #     tag: "latest"
 #     pullPolicy: Always
 #   replicaCount: 0
